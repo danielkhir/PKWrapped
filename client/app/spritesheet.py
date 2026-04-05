@@ -5,7 +5,7 @@ from PIL import Image
 
 class Spritesheet:
     def __init__(self):
-        self.base_path = "./app/static/"
+        self.base_path = "./static/"
         self.spritesheet_path = self.base_path + "pokesprite-pokemon-gen8.png"
         self.spritecss_path = self.base_path + "pokesprite-pokemon-gen8.css"
 

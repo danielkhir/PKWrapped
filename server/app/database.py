@@ -1,3 +1,4 @@
+import os
 import sqlite3
 from typing import Annotated
 
@@ -5,7 +6,7 @@ import pandas as pd
 from fastapi import Depends
 from sqlmodel import Session, SQLModel, create_engine
 
-DB_PATH = "../data/db.sqlite"
+DB_PATH = os.getenv("PKW_DB_URL", "./data/db.sqlite")
 
 db_url = f"sqlite:///{DB_PATH}"
 connect_args = {"check_same_thread": False}

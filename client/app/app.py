@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from client import APIClient
+from api_client import APIClient
 from spritesheet import Spritesheet
 
 spritesheet = Spritesheet()
@@ -45,7 +45,7 @@ st.subheader("Top Used")
 col1, col2 = st.columns(2)
 with col1:
     st.subheader("Top 5 Moves")
-    st.plotly_chart(px.bar(pd.Series(pkm_stats.TopMoves)))
+    st.plotly_chart(px.bar(pd.Series(pkm_stats.TopMoves)), key="top-move-chart")
 with col2:
     st.subheader("Top 5 Mons")
-    st.plotly_chart(px.bar(pd.Series(pkm_stats.TopPkms)))
+    st.plotly_chart(px.bar(pd.Series(pkm_stats.TopPkms)), key="top-mon-chart")

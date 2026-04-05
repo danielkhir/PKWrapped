@@ -1,3 +1,4 @@
+import os
 import requests
 
 from models import PkmStats, SaveStats
@@ -5,7 +6,7 @@ from models import PkmStats, SaveStats
 
 class APIClient:
     def __init__(self):
-        self.BASE_URL = "http://localhost:8000/"
+        self.BASE_URL = os.getenv("PKW_API_URL", "http://localhost:8000/")
 
     def get_pkmns(self, limit: int = 100):
         url = self.BASE_URL + f"pkms/?page_size={limit}"
