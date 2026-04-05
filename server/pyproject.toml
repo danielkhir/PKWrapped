@@ -1,0 +1,18 @@
+[project]
+name = "pkw-server"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi[standard]>=0.115.10",
+    "pandas>=3.0.2",
+    "sqlmodel>=0.0.23",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+    "pre-commit>=4.2.0",
+    "ruff>=0.9.9",
+]
