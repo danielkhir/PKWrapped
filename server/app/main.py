@@ -1,11 +1,14 @@
+import subprocess
+
 from contextlib import asynccontextmanager
+from typing import Annotated
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, File, Query, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import func, select
+from sqlmodel import Session, func, select, text
 
-from .database import SessionDep, create_db_and_tables, read_tables
-from .models import Pkm, Save, SaveWithStats
+from .database import get_session, create_db_and_tables, read_tables, truncate_tables
+from .models import Pkm, Save, SaveWithStats, StatFilter, PkmFilter
 from .stats import StatCalculator
 
 
@@ -14,6 +17,8 @@ async def lifespan(app: FastAPI):
     create_db_and_tables()
     yield
 
+
+SessionDep = Annotated[Session, Depends(get_session)]
 
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
@@ -30,14 +35,9 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/saves/", response_model=list[Save])
-def read_saves(session: SessionDep):
-    return session.exec(select(Save)).all()
-
-
 @app.get("/stats/", response_model=list)
-def calc_saves(session: SessionDep):
-    save_df, pkm_df = read_tables()
+def calc_saves(stat_filter: Annotated[StatFilter, Query()]):
+    save_df, pkm_df = read_tables(stat_filter)
 
     calc = StatCalculator(save_df, pkm_df)
 
@@ -46,15 +46,37 @@ def calc_saves(session: SessionDep):
     return [save_stats, pkm_stats]
 
 
-@app.get("/saves/{save_id}", response_model=SaveWithStats)
+@app.get("/saves/", response_model=list[Save])
+def read_saves(session: SessionDep):
+    return session.exec(select(Save)).all()
+
+
+@app.post("/saves/", response_model=str)
+def post_saves(file: Annotated[bytes, File()]):
+    with open("./data/temp.sav", "wb") as f:
+        f.write(file)
+
+    subprocess.run(["./PKBridge", "-i", "./data/temp.sav", "-o", "./data/"])
+
+    return "OK"
+
+
+@app.delete("/saves/", response_model=str)
+def delete_saves(session: SessionDep):
+    for stmt in truncate_tables():
+        session.exec(text(stmt))
+    session.commit()
+    return "OK"
+
+
+@app.get("/saves/{save_id}/", response_model=SaveWithStats)
 def read_save(save_id: str, session: SessionDep):
     save = session.get(Save, save_id)
     if not save:
         raise HTTPException(status_code=404, detail="Run not found")
 
-    total_pkm = session.exec(
-        select(func.count(Pkm.ID)).where(Pkm.SaveID == save_id)
-    ).one()
+    stmt = select(func.count(Pkm.ID)).where(Pkm.SaveID == save_id)
+    total_pkm = session.exec(stmt).one()
 
     save_with_stats = SaveWithStats(
         **save.model_dump(),
@@ -66,19 +88,32 @@ def read_save(save_id: str, session: SessionDep):
 @app.get("/pkms/", response_model=list[Pkm])
 def read_pkms(
     session: SessionDep,
-    save_id: str | None = None,
-    page: int | None = None,
-    page_size: int = 30,
+    pkm_filter: Annotated[PkmFilter, Query()],
 ):
     stmt = select(Pkm)
-    if save_id:
-        stmt = stmt.where(Pkm.SaveID == save_id)
-    if page_size:
-        stmt = stmt.limit(page_size)
-    if page:
-        stmt = stmt.offset(page * page_size)
+
+    if pkm_filter.saveID:
+        stmt = stmt.where(Pkm.SaveID == pkm_filter.saveID)
+
+    stmt = stmt.limit(pkm_filter.pageSize)
+    stmt = stmt.offset(pkm_filter.page * pkm_filter.pageSize)
+
     pkms = session.exec(stmt).all()
     return pkms
+
+
+@app.get("/pkms/random/", response_model=list[int])
+def read_random(
+    session: SessionDep,
+):
+    stmt = (
+        select(Pkm.SpeciesID)
+        .where(Pkm.EVTotal >= 100)
+        .order_by(func.random())
+        .limit(30)
+    )
+    ids = session.exec(stmt).all()
+    return ids
 
 
 def main():

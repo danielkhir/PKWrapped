@@ -41,5 +41,5 @@ class StatCalculator:
             TotalNicknamed=self.pkm_df[self.pkm_df.IsNicknamed == 1].ID.count(),
             TopBalls=get_top_n_dict(self.pkm_df.Ball, limit),
             TopMoves=get_top_n_dict(moves, limit),
-            TopPkms=get_top_n_dict(self.pkm_df.Species),
+            TopPkms=get_top_n_dict(self.pkm_df.SpeciesID),
         )

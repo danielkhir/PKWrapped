@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlmodel import Column, Field, SQLModel, String
 
 # class Species(SQLModel, table=True):
@@ -115,7 +117,7 @@ class PkmStats(SQLModel):
     TopBalls: dict[str, int]
     TopMoves: dict[str, int]
     # TopMoveTypes: list[str, int]
-    TopPkms: dict[str, int]
+    TopPkms: dict[int, int]
     # TopPkmTypes: list[str, int]
 
 
@@ -125,3 +127,14 @@ class SaveStats(SQLModel):
     TotalMoney: int
 
     # TopVersions: dict[str, int]
+
+
+class StatFilter(SQLModel):
+    evTotal: Optional[int] = 0
+    saveID: Optional[str] = None
+
+
+class PkmFilter(SQLModel):
+    saveID: Optional[str] = None
+    page: Optional[int] = 0
+    pageSize: Optional[int] = 30

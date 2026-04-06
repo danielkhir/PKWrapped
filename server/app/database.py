@@ -1,12 +1,12 @@
 import os
 import sqlite3
-from typing import Annotated
 
 import pandas as pd
-from fastapi import Depends
 from sqlmodel import Session, SQLModel, create_engine
 
-DB_PATH = os.getenv("PKW_DB_URL", "./data/db.sqlite")
+from .models import StatFilter
+
+DB_PATH = os.getenv("PKW_DB_URL", "./data/test.sqlite")
 
 db_url = f"sqlite:///{DB_PATH}"
 connect_args = {"check_same_thread": False}
@@ -22,12 +22,27 @@ def get_session():
         yield session
 
 
-def read_tables():
+def read_tables(stat_filter: StatFilter):
     con = sqlite3.connect(DB_PATH)
-    save_df = pd.read_sql_query("SELECT * from saves", con)
-    pkm_df = pd.read_sql_query("SELECT * from pkms", con)
+    save_stmt = "SELECT * from saves"
+    pkm_stmt = "SELECT * from pkms"
+
+    pkm_stmt += f" WHERE EVTotal >= {stat_filter.evTotal}"
+    if stat_filter.saveID:
+        save_stmt += f" WHERE ID == '{stat_filter.saveID}'"
+        pkm_stmt += f" AND SaveID == '{stat_filter.saveID}'"
+
+    save_df = pd.read_sql_query(save_stmt, con)
+    pkm_df = pd.read_sql_query(pkm_stmt, con)
+
     con.close()
     return save_df, pkm_df
 
 
-SessionDep = Annotated[Session, Depends(get_session)]
+def truncate_tables():
+    return [
+        "delete from saves;",
+        "delete from sqlite_sequence where name='saves';",
+        "delete from pkms;",
+        "delete from sqlite_sequence where name='pkmns';",
+    ]
