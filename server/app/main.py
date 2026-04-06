@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, func, select, text
 
 from .database import get_session, create_db_and_tables, read_tables, truncate_tables
-from .models import Pkm, Save, SaveWithStats, StatFilter, PkmFilter
+from .models import Pkm, Save, SaveWithStats, StatFilter, PkmFilter, PkmWithSpecies
 from .stats import StatCalculator
 
 
@@ -85,7 +85,7 @@ def read_save(save_id: str, session: SessionDep):
     return save_with_stats
 
 
-@app.get("/pkms/", response_model=list[Pkm])
+@app.get("/pkms/", response_model=list[PkmWithSpecies])
 def read_pkms(
     session: SessionDep,
     pkm_filter: Annotated[PkmFilter, Query()],
@@ -98,6 +98,10 @@ def read_pkms(
         stmt = stmt.where(Pkm.EVTotal == pkm_filter.evTotal)
     if pkm_filter.isNicknamed:
         stmt = stmt.where(Pkm.IsNicknamed == pkm_filter.isNicknamed)
+    if pkm_filter.isShiny:
+        stmt = stmt.where(Pkm.IsShiny == pkm_filter.isShiny)
+
+    # stmt = stmt.join(Species, Species.FormName == Pkm.FullSlug, isouter=True)
 
     stmt = stmt.limit(pkm_filter.pageSize)
     stmt = stmt.offset(pkm_filter.page * pkm_filter.pageSize)

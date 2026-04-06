@@ -8,12 +8,16 @@ dependencies = [
     "fastapi[standard]>=0.115.10",
     "pandas>=3.0.2",
     "python-multipart>=0.0.20",
+    "requests>=2.33.1",
     "sqlmodel>=0.0.23",
 ]
 
 [dependency-groups]
 dev = [
     "ipykernel>=6.29.5",
+    "ipywidgets>=8.1.8",
+    "jupyter>=1.1.1",
     "pre-commit>=4.2.0",
     "ruff>=0.9.9",
+    "tqdm>=4.67.3",
 ]

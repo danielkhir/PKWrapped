@@ -1,13 +1,25 @@
 from typing import Optional
 
-from sqlmodel import Column, Field, SQLModel, String
+from sqlmodel import Column, Field, SQLModel, String, Relationship
 
-# class Species(SQLModel, table=True):
-#     id: int | None = Field(default=None, primary_key=True)
-#     name: str
-#     slug: str
-#     dexnum: str
-#     types: list[str] = Field(default_factory=list, sa_column=Column(JSON))
+
+class SpeciesBase(SQLModel):
+    FormID: int
+    SpeciesID: int
+    FormName: str
+    SpeciesName: str
+    Sprite: str
+    Type1: str
+    Type2: str
+    IsBaby: bool
+    IsLegendary: bool
+    IsMythical: bool
+
+
+class Species(SpeciesBase, table=True):
+    __tablename__ = "species"
+
+    FormID: int = Field(primary_key=True)
 
 
 class PkmBase(SQLModel):
@@ -74,6 +86,13 @@ class Pkm(PkmBase, table=True):
 
     ID: int = Field(primary_key=True)
     SaveID: str = Field(foreign_key="saves.ID", ondelete="cascade")
+    FullSlug: int = Field(foreign_key="species.FormName")
+
+    SpeciesI: Optional[Species] = Relationship()
+
+
+class PkmWithSpecies(PkmBase):
+    SpeciesI: Optional[Species]
 
 
 class SaveBase(SQLModel):
@@ -132,12 +151,14 @@ class SaveStats(SQLModel):
 class StatFilter(SQLModel):
     evTotal: Optional[int] = 0
     isNicknamed: Optional[bool] = False
+    isShiny: Optional[bool] = False
     saveID: Optional[str] = None
 
 
 class PkmFilter(SQLModel):
     evTotal: Optional[int] = 0
     isNicknamed: Optional[bool] = False
+    isShiny: Optional[bool] = False
     saveID: Optional[str] = None
     page: Optional[int] = 0
     pageSize: Optional[int] = 30

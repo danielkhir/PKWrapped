@@ -31,6 +31,8 @@ def read_tables(stat_filter: StatFilter):
 
     if stat_filter.isNicknamed:
         pkm_stmt += " AND IsNicknamed == True"
+    if stat_filter.isShiny:
+        pkm_stmt += " AND IsShiny == True"
     if stat_filter.saveID:
         save_stmt += f" WHERE ID == '{stat_filter.saveID}'"
         pkm_stmt += f" AND SaveID == '{stat_filter.saveID}'"

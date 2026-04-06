@@ -12,6 +12,7 @@ class APIClient:
         url = self.BASE_URL + "pkms/"
         url += f"?evTotal={pkm_filter.evTotal}"
         url += f"&isNicknamed={pkm_filter.isNicknamed}"
+        url += f"&isShiny={pkm_filter.isShiny}"
         url += f"&pageSize={pkm_filter.pageSize}"
         url += f"&page={pkm_filter.page}"
         pkms = requests.get(url).json()
@@ -26,6 +27,7 @@ class APIClient:
         url = self.BASE_URL + "stats/"
         url += f"?evTotal={stat_filter.evTotal}"
         url += f"&isNicknamed={stat_filter.isNicknamed}"
+        url += f"&isShiny={stat_filter.isShiny}"
 
         save_stats, pkm_stats = requests.get(url).json()
         save_stats = SaveStats.model_validate(save_stats)

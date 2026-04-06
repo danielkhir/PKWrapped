@@ -40,11 +40,12 @@ with st.sidebar:
         st.session_state.file_processed = False
 
     st.subheader("Settings")
-    options = ["Max EVs", "Nicknamed"]
+    options = ["Max EVs", "Nicknamed", "Shiny"]
     settings_selection = st.pills("Filters", options, selection_mode="multi")
     stat_filter = StatFilter(
         evTotal=510 if options[0] in settings_selection else 0,
         isNicknamed=True if options[1] in settings_selection else False,
+        isShiny=True if options[2] in settings_selection else False,
     )
     save_stats, pkm_stats = client.get_stats(stat_filter)
 
@@ -98,6 +99,7 @@ st.markdown(SpriteRow(images), unsafe_allow_html=True)
 pkm_filter = PkmFilter(
     evTotal=510 if options[0] in settings_selection else 0,
     isNicknamed=True if options[1] in settings_selection else False,
+    isShiny=True if options[2] in settings_selection else False,
     pageSize=18,
     page=st.session_state.current_page,
 )

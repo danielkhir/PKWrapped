@@ -28,12 +28,14 @@ class SaveStats(BaseModel):
 class StatFilter(BaseModel):
     evTotal: Optional[int] = 0
     isNicknamed: Optional[bool] = False
+    isShiny: Optional[bool] = False
     saveID: Optional[str] = None
 
 
 class PkmFilter(BaseModel):
     evTotal: Optional[int] = 0
     isNicknamed: Optional[bool] = False
+    isShiny: Optional[bool] = False
     saveID: Optional[str] = None
     page: Optional[int] = 0
     pageSize: Optional[int] = 30

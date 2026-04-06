@@ -1,8 +1,9 @@
 import streamlit as st
+from spritesheet import Spritesheet
 
 
 class BoxView:
-    def __init__(self, n, spritesheet, client, pkm_filter):
+    def __init__(self, n, spritesheet: Spritesheet, client, pkm_filter):
         self.rows = 3
         self.cols = 6
         self.page_size = self.rows * self.cols
@@ -36,26 +37,33 @@ class BoxView:
 
                             with st.container(
                                 border=True,
-                                width=128,
-                                height=152,
+                                width=120,
+                                height=168,
                                 horizontal_alignment="center",
+                                gap="xxsmall",
                             ):
+                                sprite_id = sprite["SpeciesID"]
+                                is_shiny = sprite["IsShiny"]
+                                has_species = sprite.get("SpeciesI", None)
+                                if has_species:
+                                    sprite_id = has_species["Sprite"]
+
                                 st.image(
-                                    self.spritesheet.get_sprite(sprite["FullSlug"]),
+                                    self.spritesheet.get_sprite(sprite_id, is_shiny),
                                     # caption=sprite['Nickname'],
                                 )
 
                                 if st.button(
                                     f"{sprite['Nickname']}",
-                                    key=f"btn_{sprite['PID']}",
+                                    key=f"btn_{sprite['ID']}",
                                     type="tertiary",
                                 ):
                                     st.session_state.selected_sprite = sprite
                         else:
                             with st.container(
                                 border=True,
-                                width=128,
-                                height=152,
+                                width=120,
+                                height=168,
                                 horizontal_alignment="center",
                             ):
                                 st.image(
@@ -97,8 +105,13 @@ class BoxView:
                 with st.container(
                     border=True, horizontal_alignment="center", height=600
                 ):
+                    sprite_id = s["SpeciesID"]
+                    is_shiny = s["IsShiny"]
+                    has_species = s.get("SpeciesI", None)
+                    if has_species:
+                        sprite_id = has_species["Sprite"]
                     st.image(
-                        self.spritesheet.get_sprite(s["FullSlug"]),
+                        self.spritesheet.get_sprite(sprite_id, is_shiny),
                     )
                     st.markdown(
                         f"<p style='text-align: center;'>{s['Nickname']} the {s['Species']}</p>",

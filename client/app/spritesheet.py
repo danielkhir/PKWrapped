@@ -10,6 +10,9 @@ class Spritesheet:
         self.spritecss_path = self.base_path + "pokesprite-pokemon-gen8.css"
 
         self.sprite3d_url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/"
+        self.sprite2d_url = (
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"
+        )
 
         self.spritesheet = None
         self.spritecss = None
@@ -44,7 +47,10 @@ class Spritesheet:
         for sprite in parsed_spritecss:
             self.sprite_coordinates[sprite[1]] = (int(sprite[3]), int(sprite[4]))
 
-    def get_sprite(self, pkmn):
+    def get_sprite(self, pkmn, is_shiny=False):
+        if is_shiny:
+            return self.sprite2d_url + "shiny/" + f"{pkmn}.png"
+        return self.sprite2d_url + f"{pkmn}.png"
         x, y = self.sprite_coordinates.get(pkmn, (None, None))
         if x is None or y is None:
             return self.transparent_sprite
