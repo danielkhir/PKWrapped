@@ -94,6 +94,10 @@ def read_pkms(
 
     if pkm_filter.saveID:
         stmt = stmt.where(Pkm.SaveID == pkm_filter.saveID)
+    if pkm_filter.evTotal:
+        stmt = stmt.where(Pkm.EVTotal == pkm_filter.evTotal)
+    if pkm_filter.isNicknamed:
+        stmt = stmt.where(Pkm.IsNicknamed == pkm_filter.isNicknamed)
 
     stmt = stmt.limit(pkm_filter.pageSize)
     stmt = stmt.offset(pkm_filter.page * pkm_filter.pageSize)

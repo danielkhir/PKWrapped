@@ -10,6 +10,10 @@ def get_top_n_dict(ser: pd.Series, limit: int = 5):
     return ser.value_counts().head(limit).to_dict()
 
 
+def get_top_n_dict_df(df: pd.DataFrame, id: str, limit: int = 5):
+    return df.value_counts().head(limit).reset_index(level=id).to_dict(orient="index")
+
+
 class StatCalculator:
     def __init__(self, save_df: pd.DataFrame, pkm_df: pd.DataFrame):
         self.save_df = save_df
@@ -41,5 +45,5 @@ class StatCalculator:
             TotalNicknamed=self.pkm_df[self.pkm_df.IsNicknamed == 1].ID.count(),
             TopBalls=get_top_n_dict(self.pkm_df.Ball, limit),
             TopMoves=get_top_n_dict(moves, limit),
-            TopPkms=get_top_n_dict(self.pkm_df.SpeciesID),
+            TopPkms=get_top_n_dict_df(self.pkm_df[["SpeciesID", "Species"]], "Species"),
         )
