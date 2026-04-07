@@ -9,9 +9,14 @@ class Spritesheet:
         self.spritesheet_path = self.base_path + "pokesprite-pokemon-gen8.png"
         self.spritecss_path = self.base_path + "pokesprite-pokemon-gen8.css"
 
-        self.sprite3d_url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/"
-        self.sprite2d_url = (
-            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"
+        self.spritebase_url = (
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/"
+        )
+        self.sprite3d_url = self.spritebase_url + "pokemon/other/showdown/"
+        self.sprite2d_url = self.spritebase_url + "pokemon/"
+        self.spriteitem_url = self.spritebase_url + "items/"
+        self.spritetype_url = (
+            self.spritebase_url + "types/generation-ix/scarlet-violet/small/"
         )
 
         self.spritesheet = None

@@ -44,7 +44,7 @@ class BoxView:
                             ):
                                 sprite_id = sprite["SpeciesID"]
                                 is_shiny = sprite["IsShiny"]
-                                has_species = sprite.get("SpeciesI", None)
+                                has_species = sprite.get("SpeciesInfo", None)
                                 if has_species:
                                     sprite_id = has_species["Sprite"]
 
@@ -107,14 +107,14 @@ class BoxView:
                 ):
                     sprite_id = s["SpeciesID"]
                     is_shiny = s["IsShiny"]
-                    has_species = s.get("SpeciesI", None)
+                    has_species = s.get("SpeciesInfo", None)
                     if has_species:
                         sprite_id = has_species["Sprite"]
                     st.image(
                         self.spritesheet.get_sprite(sprite_id, is_shiny),
                     )
                     st.markdown(
-                        f"<p style='text-align: center;'>{s['Nickname']} the {s['Species']}</p>",
+                        f"<p style='text-align: center;'>{s['Nickname']} ({s['Species'].capitalize()})</p>",
                         unsafe_allow_html=True,
                     )
 

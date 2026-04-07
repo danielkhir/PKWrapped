@@ -69,7 +69,7 @@ def SpriteRow(images):
         figures += textwrap.dedent(f"""
         <figure class="sprite-card">
             <img src="{i[0]}" alt="{i[1]}">
-            <figcaption>{i[1]["Species"].capitalize()}<br>{i[1]["count"]}</figcaption>
+            <figcaption>{i[1]}<br>{i[2]}</figcaption>
         </figure>
         """)
 
@@ -77,7 +77,7 @@ def SpriteRow(images):
 <style>
 .sprite-row {{
     display: flex;
-    justify-content: center;
+    // justify-content: center;
     gap: 20px;
     font-family: 'Source Sans Pro', sans-serif;
 }}

@@ -26,6 +26,8 @@ def read_tables(stat_filter: StatFilter):
     con = sqlite3.connect(DB_PATH)
     save_stmt = "SELECT * from saves"
     pkm_stmt = "SELECT * from pkms"
+    spc_stmt = "SELECT * from species"
+    move_stmt = "SELECT * from move"
 
     pkm_stmt += f" WHERE EVTotal >= {stat_filter.evTotal}"
 
@@ -39,9 +41,11 @@ def read_tables(stat_filter: StatFilter):
 
     save_df = pd.read_sql_query(save_stmt, con)
     pkm_df = pd.read_sql_query(pkm_stmt, con)
+    spc_df = pd.read_sql_query(spc_stmt, con)
+    move_df = pd.read_sql_query(move_stmt, con)
 
     con.close()
-    return save_df, pkm_df
+    return save_df, pkm_df, spc_df, move_df
 
 
 def truncate_tables():

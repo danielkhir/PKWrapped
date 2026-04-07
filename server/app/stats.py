@@ -15,9 +15,17 @@ def get_top_n_dict_df(df: pd.DataFrame, id: str, limit: int = 5):
 
 
 class StatCalculator:
-    def __init__(self, save_df: pd.DataFrame, pkm_df: pd.DataFrame):
+    def __init__(
+        self,
+        save_df: pd.DataFrame,
+        pkm_df: pd.DataFrame,
+        spc_df: pd.DataFrame,
+        move_df: pd.DataFrame,
+    ):
         self.save_df = save_df
         self.pkm_df = pkm_df
+        self.spc_df = spc_df
+        self.move_df = move_df
 
     def calc_save_stats(self):
         return SaveStats(
@@ -32,9 +40,16 @@ class StatCalculator:
 
     def calc_pkm_stats(self, limit: int = 5):
         moves = self.pkm_df[["Move1", "Move2", "Move3", "Move4"]].melt(
-            value_name="move"
+            value_name="Name"
         )
-        moves = moves[moves["move"] != "none"]["move"]
+        moves = moves.merge(self.move_df[["Name", "Type"]])
+        moves = moves[moves != "none"][["Name", "Type"]]
+
+        types = self.pkm_df.merge(
+            self.spc_df, left_on="FullSlug", right_on="FormName", how="inner"
+        )[["Type1", "Type2"]]
+        types = types.melt(value_name="type")["type"]
+        types = types[types != "none"]
 
         return PkmStats(
             TotalPkm=self.pkm_df.ID.count(),
@@ -44,6 +59,13 @@ class StatCalculator:
             TotalShinies=self.pkm_df[self.pkm_df.IsShiny == 1].ID.count(),
             TotalNicknamed=self.pkm_df[self.pkm_df.IsNicknamed == 1].ID.count(),
             TopBalls=get_top_n_dict(self.pkm_df.Ball, limit),
-            TopMoves=get_top_n_dict(moves, limit),
-            TopPkms=get_top_n_dict_df(self.pkm_df[["SpeciesID", "Species"]], "Species"),
+            TopHeldItems=get_top_n_dict(
+                self.pkm_df.HeldItem[self.pkm_df.HeldItem != "none"], limit
+            ),
+            TopMoves=get_top_n_dict_df(moves, "Type", limit),
+            TopMoveTypes=get_top_n_dict(moves.Type, limit),
+            TopPkms=get_top_n_dict_df(
+                self.pkm_df[["SpeciesID", "Species"]], "Species", limit
+            ),
+            TopPkmTypes=get_top_n_dict(types, limit),
         )

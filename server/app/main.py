@@ -37,9 +37,9 @@ async def root():
 
 @app.get("/stats/", response_model=list)
 def calc_saves(stat_filter: Annotated[StatFilter, Query()]):
-    save_df, pkm_df = read_tables(stat_filter)
+    save_df, pkm_df, spc_df, move_df = read_tables(stat_filter)
 
-    calc = StatCalculator(save_df, pkm_df)
+    calc = StatCalculator(save_df, pkm_df, spc_df, move_df)
 
     save_stats = calc.calc_save_stats()
     pkm_stats = calc.calc_pkm_stats()

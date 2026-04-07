@@ -88,11 +88,11 @@ class Pkm(PkmBase, table=True):
     SaveID: str = Field(foreign_key="saves.ID", ondelete="cascade")
     FullSlug: int = Field(foreign_key="species.FormName")
 
-    SpeciesI: Optional[Species] = Relationship()
+    SpeciesInfo: Optional[Species] = Relationship()
 
 
 class PkmWithSpecies(PkmBase):
-    SpeciesI: Optional[Species]
+    SpeciesInfo: Optional[Species]
 
 
 class SaveBase(SQLModel):
@@ -134,10 +134,11 @@ class PkmStats(SQLModel):
     TotalNicknamed: int
 
     TopBalls: dict[str, int]
-    TopMoves: dict[str, int]
-    # TopMoveTypes: list[str, int]
+    TopHeldItems: dict[str, int]
+    TopMoves: dict[str, dict[str, str | int]]
+    TopMoveTypes: dict[str, int]
     TopPkms: dict[int, dict[str, str | int]]
-    # TopPkmTypes: list[str, int]
+    TopPkmTypes: dict[str, int]
 
 
 class SaveStats(SQLModel):

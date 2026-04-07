@@ -3,7 +3,7 @@ import streamlit as st
 from api_client import APIClient
 from elements import SpriteMarquee, HideFSButton, SpriteRow
 from spritesheet import Spritesheet
-from models import StatFilter, PkmFilter
+from models import StatFilter, PkmFilter, TYPES
 from box_view import BoxView
 
 spritesheet = Spritesheet()
@@ -15,10 +15,6 @@ st.set_page_config(
 st.markdown(HideFSButton, unsafe_allow_html=True)
 
 st.title("PKWrapped - Box Analytics")
-
-st.iframe(SpriteMarquee(client.get_random_pkm_ids()), height=72)
-
-# save_stats, pkm_stats = client.get_stats(StatFilter())
 
 if "file_processed" not in st.session_state:
     st.session_state.file_processed = False
@@ -50,14 +46,17 @@ with st.sidebar:
     save_stats, pkm_stats = client.get_stats(stat_filter)
 
     if st.button("Wipe data", type="tertiary"):
-        client.delete_saves()
-        st.rerun()
+        if st.popover("Sure?"):
+            client.delete_saves()
+            st.rerun()
 
 if save_stats.TotalSaves < 1:
-    st.text("You have no saves. Upload one!")
+    st.info("You have no saves. Upload one!")
+    st.stop()
 
+st.iframe(SpriteMarquee(client.get_random_pkm_ids()), height=72)
 
-st.subheader("Overall Metrics")
+st.markdown("## Overall Metrics")
 col1, col2 = st.columns(2)
 with col1:
     st.subheader("Saves")
@@ -82,20 +81,70 @@ with col2:
         st.metric("Nicknamed", pkm_stats.TotalNicknamed)
 
 
-st.subheader("Top Used")
-# col1, col2 = st.columns(2)
-# with col1:
-#     st.subheader("Top 5 Moves")
-#     st.plotly_chart(px.bar(pd.Series(pkm_stats.TopMoves)), key="top-move-chart")
-# with col2:
-st.subheader("Top 5 Mons")
-images = [
-    (f"{spritesheet.sprite3d_url}{species_id}.gif", count)
-    for species_id, count in pkm_stats.TopPkms.items()
-]
-st.markdown(SpriteRow(images), unsafe_allow_html=True)
+def de_slug(s: str):
+    return " ".join([x.capitalize() for x in s.split("-")])
 
 
+st.markdown("## Top Used")
+col1, col2, col3 = st.columns(3, gap="medium")
+with col1:
+    st.subheader("Mons")
+    images = [
+        (
+            f"{spritesheet.sprite3d_url}{species_id}.gif",
+            count["Species"].capitalize(),
+            count["count"],
+        )
+        for species_id, count in pkm_stats.TopPkms.items()
+    ]
+    st.markdown(SpriteRow(images), unsafe_allow_html=True)
+with col2:
+    st.subheader("Balls")
+    images = [
+        (f"{spritesheet.spriteitem_url}{ball}.png", de_slug(ball), count)
+        for ball, count in pkm_stats.TopBalls.items()
+    ]
+
+    st.markdown(SpriteRow(images), unsafe_allow_html=True)
+with col3:
+    st.subheader("Held Items")
+    images = [
+        (
+            f"{spritesheet.spriteitem_url}{item if '-z' not in item else item + '--bag'}.png",
+            de_slug(item),
+            count,
+        )
+        for item, count in pkm_stats.TopHeldItems.items()
+    ]
+
+    st.markdown(SpriteRow(images), unsafe_allow_html=True)
+
+st.write("")
+
+col1, col2, col3 = st.columns(3, gap="medium")
+with col1:
+    st.subheader("Types")
+    images = [
+        (f"{spritesheet.spritetype_url}{TYPES[ty]}.png", de_slug(ty), count)
+        for ty, count in pkm_stats.TopPkmTypes.items()
+    ]
+
+    st.markdown(SpriteRow(images), unsafe_allow_html=True)
+with col2:
+    st.subheader("Moves")
+    images = [
+        (
+            f"{spritesheet.spritetype_url}{TYPES[move_info['Type']]}.png",
+            de_slug(move),
+            move_info["count"],
+        )
+        for move, move_info in pkm_stats.TopMoves.items()
+    ]
+    st.markdown(SpriteRow(images), unsafe_allow_html=True)
+
+st.write("")
+
+st.markdown("## Box")
 pkm_filter = PkmFilter(
     evTotal=510 if options[0] in settings_selection else 0,
     isNicknamed=True if options[1] in settings_selection else False,
