@@ -7,7 +7,6 @@ COPY pyproject.toml ./
 RUN uv pip install --system --no-cache -r pyproject.toml
 
 COPY app/ ./app/
-COPY static/ ./static/
 
 EXPOSE 8501
 

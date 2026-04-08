@@ -1,65 +1,36 @@
-import re
-
 from PIL import Image
+from models import TYPES
 
 
 class Spritesheet:
     def __init__(self):
-        self.base_path = "./static/"
-        self.spritesheet_path = self.base_path + "pokesprite-pokemon-gen8.png"
-        self.spritecss_path = self.base_path + "pokesprite-pokemon-gen8.css"
-
-        self.spritebase_url = (
+        self.base_url = (
             "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/"
         )
-        self.sprite3d_url = self.spritebase_url + "pokemon/other/showdown/"
-        self.sprite2d_url = self.spritebase_url + "pokemon/"
-        self.spriteitem_url = self.spritebase_url + "items/"
-        self.spritetype_url = (
-            self.spritebase_url + "types/generation-ix/scarlet-violet/small/"
-        )
+        self.pkm3d_url = self.base_url + "pokemon/other/showdown/"
+        self.pkm2d_url = self.base_url + "pokemon/"
+        self.item_url = self.base_url + "items/"
+        self.type_url = self.base_url + "types/generation-ix/scarlet-violet/small/"
 
-        self.spritesheet = None
-        self.spritecss = None
-        self.sprite_size = (0, 0)
-        self.sprite_coordinates = dict()
-
-        self.resized_ = 64
+        self.sprite_size = 96
 
         self.transparent_sprite = Image.new(
-            "RGBA", (self.resized_, self.resized_), (0, 0, 0, 0)
+            "RGBA", (self.sprite_size, self.sprite_size), (0, 0, 0, 0)
         )
 
-        self._load_spritesheet()
-        self._parse_spritesheet()
-
-    def _load_spritesheet(self):
-        self.spritesheet = Image.open(self.spritesheet_path)
-
-        with open(self.spritecss_path, "r") as f:
-            self.spritecss = f.read()
-
-    def _parse_spritesheet(self):
-        sprite_size = re.findall(r"(width|height): (\d+)px", self.spritecss)
-        sprite_width = [int(x[1]) for x in sprite_size if x[0] == "width"][0]
-        sprite_height = [int(x[1]) for x in sprite_size if x[0] == "height"][0]
-        self.sprite_size = (sprite_width, sprite_height)
-
-        parsed_spritecss = re.findall(
-            r"(pokesprite)\.(.+)\s\{\n\s+(background-position):\s-(\d+)px\s-(\d+)px;",
-            self.spritecss,
-        )
-        for sprite in parsed_spritecss:
-            self.sprite_coordinates[sprite[1]] = (int(sprite[3]), int(sprite[4]))
-
-    def get_sprite(self, pkmn, is_shiny=False):
+    def get_2dpkm(self, id: str, is_shiny=False) -> str:
         if is_shiny:
-            return self.sprite2d_url + "shiny/" + f"{pkmn}.png"
-        return self.sprite2d_url + f"{pkmn}.png"
-        x, y = self.sprite_coordinates.get(pkmn, (None, None))
-        if x is None or y is None:
-            return self.transparent_sprite
+            return self.pkm2d_url + "shiny/" + f"{id}.png"
+        return self.pkm2d_url + f"{id}.png"
 
-        return self.spritesheet.crop(
-            (x, y, x + self.sprite_size[0], y + self.sprite_size[1])
-        ).resize((self.resized_, self.resized_))
+    def get_3dpkm(self, id: str) -> str:
+        return self.pkm3d_url + f"{id}.gif"
+
+    def get_item(self, id: str) -> str:
+        # handle z-crystals
+        if "-z" in id:
+            id = id + "--bag"
+        return self.item_url + f"{id}.png"
+
+    def get_type(self, id: str) -> str:
+        return self.type_url + f"{TYPES[id]}.png"

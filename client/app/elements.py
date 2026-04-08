@@ -1,21 +1,23 @@
-import numpy as np
 import textwrap
 
+HideFSButton = """
+<style>
+div[data-testid="stElementToolbar"] {
+display: none !important;
+}
+</style>
+"""
 
-def SpriteMarquee(ids: list[int] = None):
-    if ids is None:
-        ids = np.random.randint(1, 710, 25)
 
-    SPRITE_BASE_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/"
-    images = [SPRITE_BASE_URL + str(x) + ".gif" for x in ids]
-    IMG_W = 64
-    GAP = 20
-    TOTAL_MOVE = (IMG_W + GAP) * len(images)
+def SpriteMarquee(urls: list[str]):
+    width = 64
+    gap = 20
+    total_move = (width + gap) * len(urls)
 
     return textwrap.dedent(f"""
 <div class="marquee-viewport">
     <div class="marquee-content">
-        {"".join([f'<img src="{url}" class="marquee-item">' for url in images * 2])}
+        {"".join([f'<img src="{url}" class="marquee-item">' for url in urls * 2])}
     </div>
 </div>
 
@@ -31,7 +33,7 @@ body {{ margin: 0; padding: 0; overflow: hidden; background-color: transparent; 
 
 .marquee-content {{
     display: flex;
-    gap: {GAP}px;
+    gap: {gap}px;
     width: max-content;
     animation: scroll 40s linear infinite;
 }}
@@ -41,29 +43,20 @@ body {{ margin: 0; padding: 0; overflow: hidden; background-color: transparent; 
 }}
 
 .marquee-item {{
-    width: {IMG_W}px;
-    height: {IMG_W}px;
+    width: {width}px;
+    height: {width}px;
     object-fit: contain;
 }}
 
 @keyframes scroll {{
     0% {{ transform: translateX(0); }}
-    100% {{ transform: translateX(-{TOTAL_MOVE}px); }}
+    100% {{ transform: translateX(-{total_move}px); }}
 }}
 </style>
     """)
 
 
-HideFSButton = """
-<style>
-div[data-testid="stElementToolbar"] {
-display: none !important;
-}
-</style>
-"""
-
-
-def SpriteRow(images):
+def SpriteRow(images: list[tuple[str, str, str]]):
     figures = ""
     for i in images:
         figures += textwrap.dedent(f"""

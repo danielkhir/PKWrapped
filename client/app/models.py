@@ -26,20 +26,85 @@ class SaveStats(BaseModel):
     # TopVersions: dict[str, int]
 
 
-class StatFilter(BaseModel):
+class StatQuery(BaseModel):
     evTotal: Optional[int] = 0
     isNicknamed: Optional[bool] = False
     isShiny: Optional[bool] = False
     saveID: Optional[str] = None
 
 
-class PkmFilter(BaseModel):
+class PkmQuery(BaseModel):
     evTotal: Optional[int] = 0
     isNicknamed: Optional[bool] = False
     isShiny: Optional[bool] = False
     saveID: Optional[str] = None
     page: Optional[int] = 0
     pageSize: Optional[int] = 30
+
+
+class Species(BaseModel):
+    Sprite: str
+
+
+class Pkm(BaseModel):
+    ID: int
+
+    Species: str
+    SpeciesID: int
+    Form: str
+    FormID: int
+    FullSlug: str
+
+    SpeciesInfo: Optional["Species"] = None
+
+    Nickname: str
+    Nature: str
+    Gender: str
+    Ability: str
+    Move1: str
+    Move2: str
+    Move3: str
+    Move4: str
+    HeldItem: str
+    HP: str
+    ATK: str
+    DEF: str
+    SPA: str
+    SPD: str
+    SPE: str
+    MetLoc: str
+    EggLoc: str
+    Ball: str
+    OT: str
+    Version: str
+    OTLang: str
+    Legal: str
+    EncounterType: str
+
+    PID: str
+    IV_HP: int
+    IV_ATK: int
+    IV_DEF: int
+    IV_SPA: int
+    IV_SPD: int
+    IV_SPE: int
+    Level: int
+    EV_HP: int
+    EV_ATK: int
+    EV_DEF: int
+    EV_SPA: int
+    EV_SPD: int
+    EV_SPE: int
+    EVTotal: int
+    IVTotal: int
+    IsShiny: bool
+    IsNicknamed: bool
+    Friendship: int
+    MetYear: int
+    MetMonth: int
+    MetDay: int
+
+    SaveID: str
 
 
 TYPES = {
