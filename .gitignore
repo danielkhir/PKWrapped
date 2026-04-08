@@ -49,3 +49,6 @@ data/
 static/
 *.ipynb
 *.sqlite
+
+TODO.md
+PKBridge
