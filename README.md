@@ -12,10 +12,9 @@ Interactive summary statistics for your Pokémon collection.
 
 ## Screenies
 
-<p align="center">
-  <img src="docs/stats.png" width="48%"/>
-  <img src="docs/box.png" width="48%" />
-</p>
+<img src="docs/stats.png" width="90%"/>
+<br><br>
+<img src="docs/box.png" width="90%" />
 
 ## Setup
 
