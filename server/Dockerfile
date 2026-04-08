@@ -7,6 +7,7 @@ COPY pyproject.toml ./
 RUN uv pip install --system --no-cache -r pyproject.toml
 
 COPY app/ ./app/
+COPY PKBridge ./
 
 EXPOSE 8000
 

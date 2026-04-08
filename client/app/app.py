@@ -156,7 +156,7 @@ with col2:
 st.write("")
 
 # Box View
-st.markdown("## Box")
+st.markdown("## Box Browser")
 pkm_query = PkmQuery(
     evTotal=510 if options[0] in settings_selection else 0,
     isNicknamed=True if options[1] in settings_selection else False,

@@ -1,7 +1,7 @@
 [project]
 name = "pkw-server"
 version = "0.1.0"
-description = "Add your description here"
+description = "Server for PKWrapped"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

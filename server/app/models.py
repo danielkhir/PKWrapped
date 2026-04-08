@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlmodel import Column, Field, SQLModel, String, Relationship
+from sqlmodel import Column, Field, Relationship, SQLModel, String
 
 
 class SpeciesBase(SQLModel):
